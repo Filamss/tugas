@@ -1,0 +1,104 @@
+package Network;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+
+public class GUItugas extends JFrame {
+    private JLabel tugas;
+
+    private JLabel judul;
+    private JLabel msgText;
+    private JLabel statusText;
+    private JLabel commentText;
+    private JTextField msgColoumn;
+    private JTextField comentColoumn;
+    private JTextField statusColoumn;
+    private JButton submitButton;
+    private JButton cancelButton;
+    private JButton closeButton;
+
+    public GUItugas(){
+        super("GUI Tugas");
+        setLayout(null);
+        setSize(400,300);
+
+        tugas = new JLabel("TM01-FilamsiMabdaGhifary-22090002");
+        judul = new JLabel("Aplikasi Pesan");
+        msgText= new JLabel("Message");
+        statusText = new JLabel("Status");
+        commentText = new JLabel("Komentar");
+        msgColoumn = new JTextField();
+        statusColoumn = new JTextField();
+        comentColoumn = new JTextField();
+        submitButton = new JButton("Submit");
+        cancelButton = new JButton("Cancel");
+        closeButton = new JButton("Close");
+
+
+        add(tugas);
+        add(judul);
+        add(msgText);
+        add(msgColoumn);
+        add(statusText);
+        add(statusColoumn);
+        add(commentText);
+        add(comentColoumn);
+        add(submitButton);
+        add(cancelButton);
+        add(closeButton);
+
+        setLocationRelativeTo(null);
+
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            //menghitung jumah kata pada kolom
+                String message = msgColoumn.getText();
+                int wordCount = message.split("\\s+").length;
+                statusColoumn.setText("Jumlah kata: " + wordCount);
+                try {
+                    ConnectURI koneksiku = new ConnectURI();
+                    URL myAddress = ConnectURI.buildURL("https://harber.mimoapps.xyz/api/hetaccess.php");
+                    String response = koneksiku.getResponseFromHttpUrl(myAddress);
+
+                    assert response != null;
+                    JSONArray responseJSON = new JSONArray(response);
+                    ArrayList<ResponseModel> responseModel = new ArrayList<>();
+                    for (int i = 0; i < responseJSON.length(); i++) {
+                        ResponseModel resModel = new ResponseModel();
+                        JSONObject myJSONObject = responseJSON.getJSONObject(i);
+                        resModel.setMessage(myJSONObject.getString("Halo Apa Kabar?"));
+                        resModel.setStatus(myJSONObject.getString("Alhamdulillah"));
+                        resModel.setComments(myJSONObject.getString("Mau Komen Apa?"));
+                        responseModel.add(resModel);
+                    }
+                    msgColoumn.setText("Message : " + responseModel.get(0).getMessage() + ", Status : " + responseModel.get(0).getStatus() + ", Comments : " + responseModel.get(0).getComments());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        GUItugas guItugas = new GUItugas();
+
+        guItugas.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        guItugas.setVisible(true);
+    }
+}
+
+
+
+
+
+
+
